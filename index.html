@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Top Down Shooter (Touch Only)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game">
+    <canvas id="canvas" width="480" height="720"></canvas>
+
+    <div id="hud">
+      <div id="score">Score: 0</div>
+      <div id="lives">Lives: 3</div>
+    </div>
+
+    <div id="overlay" class="hidden">
+      <div id="menu">
+        <h1>Top Down Shooter</h1>
+        <button id="start-btn">Start</button>
+        <p class="hint">Touch anywhere to move and shoot. Release to stop firing.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
