@@ -18,6 +18,7 @@
   let last = 0;
   let score = 0;
   let lives = 3;
+  let highScore = Number(localStorage.getItem('topdown-shooter-high-score') || 0);
 
   const input = {
     x:0, y:0, firing:false, targetX:null, targetY:null
@@ -47,17 +48,25 @@
   }
 
   function updateHud(){
-    scoreEl.textContent = 'Score: ' + score;
+    scoreEl.textContent = `Score: ${score} · Best: ${highScore}`;
     livesEl.textContent = 'Lives: ' + lives;
+  }
+
+  function saveHighScore(){
+    if(score > highScore){
+      highScore = score;
+      localStorage.setItem('topdown-shooter-high-score', String(highScore));
+    }
   }
 
   function spawnEnemy(){
     const ex = Math.random()*(W-20)+10;
+    const difficulty = Math.min(2, score / 500);
     enemies.push({
       x: ex,
       y: -10,
       r:10,
-      speed: 30 + Math.random()*40,
+      speed: 30 + Math.random()*40 + difficulty * 25,
       hp: 1
     });
   }
@@ -107,8 +116,9 @@
       if(b.y < -10) bullets.splice(i,1);
     }
 
-    // Update enemies
-    if(Math.random() < dt*0.9) spawnEnemy();
+    // Update enemies. Spawn rate and speed increase as the score grows.
+    const difficulty = Math.min(1.8, score / 400);
+    if(Math.random() < dt*(0.9 + difficulty * 0.35)) spawnEnemy();
     for(let i=enemies.length-1;i>=0;i--){
       const e = enemies[i];
       e.y += e.speed*dt;
@@ -132,6 +142,7 @@
           enemies.splice(i,1);
           bullets.splice(j,1);
           score += 10;
+          saveHighScore();
           sounds.hit();
           updateHud();
           break;
@@ -155,27 +166,21 @@
   }
 
   function render(){
-    // background
     ctx.clearRect(0,0,W,H);
-    // subtle stars / grid
     ctx.fillStyle = '#071620';
     ctx.fillRect(0,0,W,H);
 
-    // draw player
     ctx.save();
     ctx.translate(player.x, player.y);
-    // ship body
     ctx.fillStyle = '#7ef4d0';
     roundTri(ctx, 0, -10, 10, 18);
     ctx.restore();
 
-    // bullets
     for(const b of bullets){
       ctx.fillStyle = '#fff';
       circle(ctx, b.x, b.y, b.r);
     }
 
-    // enemies
     for(const e of enemies){
       ctx.fillStyle = '#fb7185';
       circle(ctx, e.x, e.y, e.r);
@@ -191,12 +196,12 @@
 
   function lose(){
     running = false;
+    saveHighScore();
     overlay.classList.remove('hidden');
-    overlayMenu.innerHTML = `<h1>Game Over</h1><p>Score: ${score}</p><button id="start-btn">Retry</button>`;
+    overlayMenu.innerHTML = `<h1>Game Over</h1><p>Score: ${score}</p><p>Best: ${highScore}</p><button id="start-btn">Retry</button>`;
     document.getElementById('start-btn').addEventListener('click', start);
   }
 
-  // simple helpers
   function circle(ctx,x,y,r){ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
   function roundTri(ctx, x, y, r, h){
     ctx.beginPath();
@@ -238,7 +243,6 @@
     input.firing = false;
   });
 
-  // Start UI
   startBtn.addEventListener('click', start);
 
   function start(){
@@ -249,7 +253,6 @@
     requestAnimationFrame(loop);
   }
 
-  // Simple WebAudio sound bank
   function createSoundBank(){
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     function osc(type, freq, dur, vol=0.08, when=0){
@@ -271,15 +274,7 @@
     };
   }
 
-  // resume audio on first gesture
-  document.addEventListener('pointerdown', function resumeAudio(){
-    if(window.AudioContext && window.audioContextResumed) return;
-    try{
-      const ctxProto = (window.AudioContext || window.webkitAudioContext).prototype;
-    }catch(e){}
-  }, {once:true});
-
   // expose for debugging
   window.__game = { start, reset };
-
+  updateHud();
 })();
