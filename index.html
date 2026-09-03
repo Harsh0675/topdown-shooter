@@ -2,28 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Top Down Shooter (Touch Only)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#070b16" />
+  <meta name="description" content="Neon Strike — a mobile-first top-down arcade shooter built with Canvas and vanilla JavaScript." />
+  <title>NEON STRIKE — Top Down Shooter</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="game">
-    <canvas id="canvas" width="480" height="720"></canvas>
+  <main class="app-shell">
+    <section id="game" aria-label="Neon Strike game">
+      <canvas id="canvas" width="480" height="800"></canvas>
 
-    <div id="hud">
-      <div id="score">Score: 0</div>
-      <div id="lives">Lives: 3</div>
-    </div>
+      <header class="hud" aria-live="polite">
+        <div class="hud-block"><span>WAVE</span><strong id="wave">1</strong></div>
+        <div class="hud-block score-block"><span>SCORE</span><strong id="score">0</strong><small id="combo">x1</small></div>
+        <div class="hud-block"><span>BEST</span><strong id="best">0</strong></div>
+      </header>
 
-    <div id="overlay" class="hidden">
-      <div id="menu">
-        <h1>Top Down Shooter</h1>
-        <button id="start-btn">Start</button>
-        <p class="hint">Touch anywhere to move and shoot. Release to stop firing.</p>
+      <div class="status-bars">
+        <div class="bar"><span>HP</span><i><b id="hp-bar"></b></i></div>
+        <div class="bar shield"><span>SHIELD</span><i><b id="shield-bar"></b></i></div>
       </div>
-    </div>
-  </div>
 
+      <div id="boss-bar" class="boss-bar hidden"><div><span id="boss-name">BOSS</span><span id="boss-hp-text">100%</span></div><i><b id="boss-hp"></b></i></div>
+
+      <div id="toast" class="toast" role="status"></div>
+
+      <div id="overlay" class="overlay">
+        <div class="panel" id="menu-panel">
+          <p class="eyebrow">ARCADE // SECTOR 07</p>
+          <h1>NEON<br><em>STRIKE</em></h1>
+          <p class="tagline">Survive the waves. Break the boss. Beat your record.</p>
+          <button id="start-btn" class="primary">START MISSION <span>▶</span></button>
+          <div class="menu-grid">
+            <button id="loadout-btn">SHIP <b id="ship-name">INTERCEPTOR</b></button>
+            <button id="sound-btn">SOUND <b id="sound-state">ON</b></button>
+          </div>
+          <div class="tips">DRAG TO MOVE &nbsp;•&nbsp; HOLD TO FIRE &nbsp;•&nbsp; SWIPE TO DASH</div>
+        </div>
+
+        <div class="panel hidden" id="gameover-panel">
+          <p class="eyebrow">MISSION COMPLETE</p>
+          <h2>RUN<br><em>ENDED</em></h2>
+          <div class="result"><span>SCORE</span><strong id="final-score">0</strong></div>
+          <div class="result"><span>BEST WAVE</span><strong id="final-wave">1</strong></div>
+          <button id="retry-btn" class="primary">REDEPLOY <span>↻</span></button>
+          <button id="menu-btn" class="secondary">MAIN MENU</button>
+        </div>
+
+        <div class="panel hidden" id="upgrade-panel">
+          <p class="eyebrow">WAVE CLEARED</p>
+          <h2>CHOOSE<br><em>UPGRADE</em></h2>
+          <div id="upgrade-list" class="upgrade-list"></div>
+        </div>
+      </div>
+
+      <div class="mobile-controls" aria-hidden="true"><span>DRAG / HOLD</span><span id="dash-hint">DASH READY</span></div>
+    </section>
+  </main>
   <script src="game.js"></script>
 </body>
 </html>
